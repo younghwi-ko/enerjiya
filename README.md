@@ -18,6 +18,8 @@ npm run dev
 
 | 변수 | 값 |
 | --- | --- |
+| `SUPABASE_URL` | Supabase 프로젝트 URL. |
+| `SUPABASE_SECRET_KEY` | Supabase 서버 전용 secret key. 브라우저나 Git에 넣지 않습니다. |
 | `BLOB_READ_WRITE_TOKEN` | 4MiB 초과 PDF용 비공개 Blob 저장소 토큰. Vercel 저장소 연결 시 자동 설정됩니다. |
 | `UPSTAGE_API_KEY` | Upstage 콘솔의 API 키. 서버에서만 사용합니다. |
 | `UPSTAGE_PROJECT_ID` | 프로젝트에 속한 워크플로우의 Project ID. 모든 Studio 요청의 `x-project-id` 헤더에 사용합니다. |
@@ -29,9 +31,19 @@ npm run dev
 
 ## 동작과 제한
 
-서버는 PDF를 `/files`에 `purpose=user_data`로 업로드하고, `/responses`로 기존 워크플로우를 실행합니다. 브라우저는 `/api/analyze`를 통해 분석을 요청하고 작업 완료를 조회합니다. [Upstage 공식 API 문서](https://console.upstage.ai/docs/agents)를 참고했습니다. PDF는 8MiB 이하를 허용합니다. 4MiB 초과 파일은 브라우저에서 비공개 Vercel Blob으로 직접 업로드하고, 서버가 읽어 Studio로 전송한 후 임시 Blob을 삭제합니다. 브라우저 중단이나 서버 장애 시 임시 파일이 남을 수 있으므로 저장소를 정기적으로 확인하세요. Blob 저장소의 무료 사용량은 모든 사용자에게 공유됩니다. 실제 Studio 응답만 표시합니다. 브라우저 탭을 새로고침해도 같은 탭에서 최근 작업을 다시 조회할 수 있습니다. 화면에는 업로드 및 작업 시작, Studio 처리, 결과 확인 상태만 표시합니다. 새 분석 시작 또는 탭 닫기는 화면의 조회를 중단하며 Studio 작업 자체를 취소하지 않습니다.
+서버는 PDF를 `/files`에 `purpose=user_data`로 업로드하고, `/responses`로 기존 워크플로우를 실행합니다. 브라우저는 `/api/analyze`를 통해 분석을 요청하고 작업 완료를 조회합니다. [Upstage 공식 API 문서](https://console.upstage.ai/docs/agents)를 참고했습니다. PDF는 8MiB 이하를 허용합니다. 4MiB 초과 파일은 브라우저에서 비공개 Vercel Blob으로 직접 업로드하고, 서버가 읽어 Studio로 전송한 후 임시 Blob을 삭제합니다. 브라우저 중단이나 서버 장애 시 임시 파일이 남을 수 있으므로 저장소를 정기적으로 확인하세요. Blob 저장소의 무료 사용량은 모든 사용자에게 공유됩니다. 실제 Studio 응답만 표시합니다. 분석 기록은 Supabase에 저장되며 사이트 방문자 누구나 파일명과 결과를 볼 수 있습니다. 브라우저 탭을 새로고침해도 같은 탭에서 최근 작업을 다시 조회할 수 있습니다. 화면에는 업로드 및 작업 시작, Studio 처리, 결과 확인 상태만 표시합니다. 새 분석 시작 또는 탭 닫기는 화면의 조회를 중단하며 Studio 작업 자체를 취소하지 않습니다.
 
 결과 매핑은 `lib/results.mjs`의 `normalize`에서 관리합니다. Studio 결과 스키마가 다르면 실제 JSON을 확인하고 필드 별칭을 추가해야 합니다. 미확인 값은 임의로 생성하지 않으며 상세 JSON을 그대로 볼 수 있습니다. 결과 스키마가 예상과 다르면 Studio 원본을 그대로 표시합니다. 실제 결과는 현장 전문가가 검토해야 합니다.
+
+## 분석 기록
+
+`분석 기록`에서 저장된 작업을 다시 확인할 수 있습니다. 웹에서 새로 시작한 작업은 자동으로 목록에 추가됩니다. 과거 작업은 Studio Monitoring의 Job ID를 `이전 Studio 작업 추가`에 입력해 가져옵니다. 웹이 과거 작업 ID를 저장하지 않았으므로 모든 과거 작업을 자동으로 복원하지는 못합니다. 작업이 완료되면 목록에서 열 때 Studio 결과를 가져와 저장합니다. 공개 페이지이므로 공유해도 되는 문서만 업로드하세요.
+
+새 Supabase 프로젝트에 연결할 때 `supabase/migrations/20261127000000_create_analysis_history.sql`을 적용하고 서버에 `SUPABASE_URL`과 `SUPABASE_SECRET_KEY`를 설정하세요. 테이블은 RLS를 사용하며 익명 데이터베이스 접근을 막고, 웹 서버가 기록 조회를 제공합니다.
+
+## 팀원 협업
+
+공개 저장소는 누구나 포크하고 Pull Request를 열 수 있습니다. 저장소에 직접 푸시하려면 소유자가 GitHub Settings → Collaborators에서 팀원을 초대해야 합니다. `main`에 푸시하면 연결된 Vercel 프로덕션 배포가 시작됩니다. 팀원이 로컬에서 실제 연동을 검증하려면 각자 `.env.local`을 설정해야 하며, 비밀 키는 Git에 커밋하지 않습니다.
 
 ## Vercel 배포
 
