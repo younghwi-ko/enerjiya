@@ -19,11 +19,12 @@ npm run dev
 | 변수 | 값 |
 | --- | --- |
 | `UPSTAGE_API_KEY` | Upstage 콘솔의 API 키. 서버에서만 사용합니다. |
+| `UPSTAGE_PROJECT_ID` | 프로젝트에 속한 워크플로우의 Project ID. 모든 Studio 요청의 `x-project-id` 헤더에 사용합니다. |
 | `UPSTAGE_WORKFLOW_ID` | 기존 Studio 워크플로우의 Agent ID (`agt_...`). |
-| `UPSTAGE_CONFIG_ID` | 선택 사항. Studio의 저장된 Config ID. 생략하면 워크플로우 기본 설정을 사용합니다. |
+| `UPSTAGE_CONFIG_ID` | 선택 사항. Studio의 저장된 Config ID. 생략하면 최신 설정을 사용합니다. |
 | `UPSTAGE_API_BASE_URL` | 선택 사항. 기본값 `https://api.upstage.ai/v2`. |
 
-기존 Studio 워크플로우에서 설정을 저장한 뒤 오른쪽 위 `⋯ → Code`에서 Agent ID와 Config ID를 확인합니다. 기본 Config가 없거나 특정 버전을 사용하려면 Config ID도 설정하세요. 워크플로우를 생성하거나 수정하지 않습니다.
+기존 Studio 워크플로우에서 설정을 저장한 뒤 오른쪽 위 `⋯ → Code`에서 Agent ID와 Config ID를 확인합니다. 특정 버전을 사용하려면 Config ID도 설정하세요. 프로젝트 ID는 같은 화면의 API 호출 예시에서 `x-project-id` 값을 확인합니다. 워크플로우를 생성하거나 수정하지 않습니다.
 
 ## 동작과 제한
 
@@ -46,3 +47,4 @@ GitHub 저장소를 Vercel 프로젝트에 연결하고 프로젝트 Settings �
 ## 약 1분 시연 멘트
 
 “EnerJiya는 저장탱크 사고와 점검 문서를 현장 대응으로 연결하는 Energy AI Workflow입니다. 먼저 PDF 보고서를 업로드하고 Upstage Studio 분석을 시작합니다. 문서는 기존 Studio 워크플로우로 전달되어 파싱과 위험 요인 추출을 거칩니다. 분석이 완료되면 사고 유형과 위험 등급, 영향받는 탱크와 범위를 한눈에 확인할 수 있습니다. 근거 요약을 바탕으로 즉시 조치와 추가 점검 권고도 제안합니다. 담당 부서에 전달할 알림 초안을 확인하고, 필요하면 원본 JSON까지 열어 세부 결과를 검토할 수 있습니다. 모든 제안은 현장 담당자의 검토를 거쳐 사용하며, 새 분석 버튼으로 다음 문서를 이어서 처리할 수 있습니다.”
+

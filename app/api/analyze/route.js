@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { extractResult, normalize } from '../../../lib/results.mjs';
 export const maxDuration = 60;
 const base = () => (process.env.UPSTAGE_API_BASE_URL || 'https://api.upstage.ai/v2').replace(/\/$/, '');
-const headers = () => ({ Authorization: `Bearer ${process.env.UPSTAGE_API_KEY}` });
+const headers = () => ({ Authorization: `Bearer ${process.env.UPSTAGE_API_KEY}`, ...(process.env.UPSTAGE_PROJECT_ID ? { 'x-project-id': process.env.UPSTAGE_PROJECT_ID } : {}) });
 async function upstream(path, options = {}) {
   const response = await fetch(`${base()}${path}`, { ...options, headers:{...headers(), ...options.headers}, signal:AbortSignal.timeout(45000), cache:'no-store' });
   if (!response.ok) throw new Error(`Studio API 오류 (${response.status})`);
@@ -37,3 +37,4 @@ export async function GET(request) {
     return NextResponse.json({status:'completed',result:normalize(raw),raw});
   } catch(error) { return failure(error); }
 }
+
