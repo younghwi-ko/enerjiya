@@ -55,7 +55,10 @@ export async function GET(request) {
   if (!id || !/^[a-zA-Z0-9_-]{1,200}$/.test(id)) return NextResponse.json({error:'올바르지 않은 작업 ID입니다.'},{status:400});
   try {
     const job = await upstream(`/responses/${encodeURIComponent(id)}?include%5B%5D=last`);
-    if (job.status === 'failed' || job.status === 'cancelled') throw new Error('Studio 워크플로우 실행이 완료되지 않았습니다.');
+    if (job.status === 'failed' || job.status === 'cancelled') {
+      const detail = typeof job.error?.message === 'string' ? job.error.message.slice(0,500) : '';
+      return NextResponse.json({error: job.status === 'cancelled' ? 'Studio 작업이 취소됐습니다.' : `Studio 작업이 실패했습니다.${detail ? ` ${detail}` : ''}`}, {status:422});
+    }
     if (job.status !== 'completed') return NextResponse.json({status:job.status});
     const raw = extractResult(job);
     return NextResponse.json({status:'completed',result:normalize(raw),raw});
