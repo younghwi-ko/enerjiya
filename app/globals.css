@@ -49,3 +49,10 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .json,.history-card{border-radius:6px}
 @media(max-width:900px){.impact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.impact-item:nth-child(odd){border-left:0}.impact-item:nth-child(n+3){border-top:1px solid var(--line)}}
 @media(max-width:650px){.overview{padding:22px;align-items:flex-start;flex-direction:column;gap:18px}.overview-context{min-width:0;border-left:0;border-top:1px solid #64867c;padding:12px 0 0;width:100%}.impact-heading{align-items:flex-start;flex-direction:column;gap:2px}.impact-item{padding:16px 12px}.impact-item strong{font-size:17px}.result-top{flex-wrap:wrap}.risk-banner{gap:20px}}
+
+.result-priorities{display:grid;grid-template-columns:minmax(220px,1fr) minmax(0,2fr);gap:16px;margin-top:16px}
+.result-priorities .result-card{margin:0;border-top:3px solid #087464}
+.priority-tanks .tank-chips span{font-size:16px;font-weight:700;padding:8px 12px}
+.priority-action .event-copy{font-size:16px;line-height:1.7;color:#172b3b;margin:12px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.impact-item strong{font-size:clamp(18px,1.6vw,23px)}
+@media(max-width:650px){.result-priorities{grid-template-columns:1fr;gap:12px}.priority-action .event-copy{font-size:15px}}
