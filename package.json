@@ -1,1 +1,1 @@
-{"name":"enerjiya","version":"1.0.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start","test":"node --test"},"dependencies":{"next":"^16.4.6","react":"^19.0.0","react-dom":"^19.0.0"}}
+{"name":"enerjiya","version":"1.0.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start","test":"node --test"},"dependencies":{"@vercel/blob":"^2.4.0","next":"^16.4.6","react":"^19.0.0","react-dom":"^19.0.0"}}

@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { get, del } from '@vercel/blob';
+import { handleUpload } from '@vercel/blob/client';
 import { extractResult, normalize } from '../../../lib/results.mjs';
 export const maxDuration = 60;
 const base = () => (process.env.UPSTAGE_API_BASE_URL || 'https://api.upstage.ai/v2').replace(/\/$/, '');
@@ -12,8 +14,30 @@ function failure(error) { console.error('Studio request failed:', error.message)
 export async function POST(request) {
   if (!process.env.UPSTAGE_API_KEY || !process.env.UPSTAGE_WORKFLOW_ID) return NextResponse.json({error:'Studio 환경 변수가 설정되지 않았습니다.'},{status:503});
   try {
-    const data = await request.formData(); const file = data.get('file');
-    if (!(file instanceof File) || !file.name.toLowerCase().endsWith('.pdf') || file.size === 0 || file.size > 4 * 1024 * 1024) return NextResponse.json({error:'4MB 이하의 PDF 파일을 선택해 주세요.'},{status:400});
+    let file;
+    if (request.headers.get('content-type')?.includes('application/json')) {
+      const data = await request.json();
+      if (data.type === 'blob.generate-client-token') {
+        const token = await handleUpload({ request, body:data, onBeforeGenerateToken: async pathname => {
+          if (!/^incoming\/[0-9a-f-]{36}\.pdf$/.test(pathname)) throw new Error('올바르지 않은 업로드 경로입니다.');
+          return { allowedContentTypes:['application/pdf'], maximumSizeInBytes:8*1024*1024, validUntil:Date.now()+5*60*1000, addRandomSuffix:false, allowOverwrite:false };
+        }});
+        return NextResponse.json(token);
+      }
+      const pathname = data.pathname;
+      if (typeof pathname !== 'string' || !/^incoming\/[0-9a-f-]{36}\.pdf$/.test(pathname)) return NextResponse.json({error:'올바르지 않은 업로드 경로입니다.'},{status:400});
+      try {
+        const blob = await get(pathname, {access:'private', useCache:false});
+        if (!blob || blob.statusCode !== 200 || !blob.stream || !blob.blob.size || blob.blob.size > 8*1024*1024) return NextResponse.json({error:'업로드한 PDF를 확인할 수 없습니다.'},{status:400});
+        const content = await new Response(blob.stream).blob();
+        file = new File([content], 'document.pdf', {type:'application/pdf'});
+      } finally {
+        await del(pathname).catch(error => console.error('Temporary file cleanup failed:', error.message));
+      }
+    } else {
+      const data = await request.formData(); file = data.get('file');
+    }
+    if (!(file instanceof File) || !file.name.toLowerCase().endsWith('.pdf') || file.size === 0 || file.size > 8 * 1024 * 1024) return NextResponse.json({error:'8MB 이하의 PDF 파일을 선택해 주세요.'},{status:400});
     const bytes = new Uint8Array(await file.slice(0, 5).arrayBuffer());
     if (new TextDecoder().decode(bytes) !== '%PDF-') return NextResponse.json({error:'올바른 PDF 파일이 아닙니다.'},{status:400});
     const form = new FormData(); form.append('file',file); form.append('purpose','user_data');
@@ -37,4 +61,5 @@ export async function GET(request) {
     return NextResponse.json({status:'completed',result:normalize(raw),raw});
   } catch(error) { return failure(error); }
 }
+
 
