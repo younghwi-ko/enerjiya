@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { get, del } from '@vercel/blob';
 import { handleUpload } from '@vercel/blob/client';
-import { extractResult, normalize } from '../../../lib/results.mjs';
+import { extractResult, normalize, getOutputText } from '../../../lib/results.mjs';
 export const maxDuration = 60;
 const base = () => (process.env.UPSTAGE_API_BASE_URL || 'https://api.upstage.ai/v2').replace(/\/$/, '');
 const headers = () => ({ Authorization: `Bearer ${process.env.UPSTAGE_API_KEY}`, ...(process.env.UPSTAGE_PROJECT_ID ? { 'x-project-id': process.env.UPSTAGE_PROJECT_ID } : {}) });
@@ -61,7 +61,7 @@ export async function GET(request) {
     }
     if (job.status !== 'completed') return NextResponse.json({status:job.status});
     const raw = extractResult(job);
-    return NextResponse.json({status:'completed',result:normalize(raw),raw});
+    return NextResponse.json({status:'completed',result:normalize(raw),raw,source:getOutputText(job)});
   } catch(error) { return failure(error); }
 }
 
