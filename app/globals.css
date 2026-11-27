@@ -152,3 +152,10 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 }
 
 @media(min-width:651px){.content:has(.result-nav){padding-right:max(5%,104px)}}
+.history-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:4px 0 12px;border-bottom:1px solid #edf2f0}
+.history-check{display:flex;align-items:center;gap:8px;font-size:13px;color:#40524f;cursor:pointer;min-height:44px}
+.history-check input{width:18px;height:18px;accent-color:#087464;cursor:pointer}
+.history-list li{display:flex;align-items:center;gap:12px}.history-list li .history-row{flex:1;min-width:0}
+.history-list li.selected{background:#fdf3ef}
+.history-delete{color:#a94230;border-color:#e9c9bf}.history-delete:hover:not(:disabled){background:#fdf3ef}
+.history-notice{color:#087464;line-height:1.6}
