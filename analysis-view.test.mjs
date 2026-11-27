@@ -42,3 +42,30 @@ test('rounded daily values are not flagged, a real mismatch still is',()=>{
  const broken=[...close];broken[5]+=5;
  assert.deepEqual(verifyInventory({tank_close_kl:{T1:broken},tank_ship_kl:{T1:ship}}),[6,7]);
 });
+import {flowNotes,metricNotes,tankRoles,teamLines,formatValue} from './lib/analysis-view.mjs';
+const sample=()=>({targets:['T1'],event_type:'정비',scenario_summary:[{id:'S0',computed:true,unshipped_kl:0,loss_krw:0,affected_order_count:0,overflow_risk_day_count:0,warning_count:0},{id:'S1',computed:true,outage:'T1 2일차 00:00 ~ 7일차 00:00, QC 8일차 00:00',unshipped_kl:0,loss_krw:0,affected_order_count:0,overflow_risk_day_count:0,warning_count:0}],impact:{warning_delta:0,unshipped_delta_kl:0,overflow_risk_day_delta:0,affected_order_delta:0,loss_delta_krw:0},recommended_tank_table:{tank_ship_kl:{T1:[100,0,0,0,0,0,0,100],T2:[200,448,448,448,448,448,448,200],T3:[0,266.29,266.29,266.29,266.29,266.29,266.29,0]},tank_close_kl:{T1:Array(8).fill(1),T2:Array(8).fill(100),T3:Array(8).fill(200)}}});
+test('flow notes cite a figure and day range and reuse displayed values',()=>{
+ const notes=flowNotes(sample());
+ assert.ok(notes.length>=4 && notes.length<=6);
+ assert.ok(notes.every(n=>[1,2,3].includes(n.figure) && n.range && n.range.start<=n.range.end));
+ assert.match(notes[0].text,/2~7일차에 쓸 수 없어/);
+ assert.ok(notes.some(n=>n.text.includes(formatValue(714.29,'kL'))));
+ assert.ok(notes.some(n=>n.text.includes('요청량을 모두 출하')));
+});
+test('metric notes explain S0 to S1, including why unshipped is zero',()=>{
+ const notes=metricNotes(sample());
+ assert.equal(notes.length,5);
+ assert.equal(notes[0].text,'미출하: 0.00 kL → 0.00 kL, 이유 — 남은 탱크가 요청량을 모두 출하');
+ const changed=sample();changed.scenario_summary[1].unshipped_kl=12.5;
+ assert.match(metricNotes(changed)[0].text,/0\.00 kL → 12\.50 kL, 이유 — 사용 불가 기간/);
+});
+test('tank roles mark the outage target and idle tanks',()=>{
+ const roles=tankRoles(sample());
+ assert.equal(roles.tanks[0].cells[2].role,'사용 불가');
+ assert.equal(roles.tanks[0].cells[0].role,'출하');
+ assert.equal(roles.tanks[2].cells[0].role,'대기');
+});
+test('team lines are one short line per team and keep empty messages as 확인 필요',()=>{
+ const lines=teamLines({team_reports:[{role:'D팀',message:'대체 출하 확인. 두 번째 문장.'},{role:'A팀',message:''},null]});
+ assert.deepEqual(lines,[{role:'A팀',text:'확인 필요'},{role:'D팀',text:'정비 기간 출하량 확인.'}]);
+});
