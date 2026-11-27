@@ -14,7 +14,7 @@ function TankTable({title, values, fmt, flagged=[]}) {
  return <div className="tank-data"><h4>{title}</h4><div className="scenario-table" role="region" aria-label={`${title} 일자별 표`} tabIndex={0}><table><thead><tr><th scope="col">탱크</th>{Array.from({length:count},(_,i)=><th className={flagged.includes(i+1)?'flagged-day':''} scope="col" key={i}>{i+1}일차</th>)}</tr></thead><tbody>{rows.map(([tank,days])=><tr key={tank}><th scope="row">{tank}</th>{Array.from({length:count},(_,i)=><td className={flagged.includes(i+1)?'flagged-day':''} key={i}>{fmt(days[i],'kL')}</td>)}</tr>)}</tbody></table></div></div>;
 }
 function EventResult({data}) {
- const fmt = (v,unit='') => (typeof v === 'number' || (typeof v === 'string' && v.trim() && Number.isFinite(Number(v)))) ? `${Number(v).toLocaleString('ko-KR')} ${unit}` : '확인 필요';
+ const fmt = (v,unit='') => (typeof v === 'number' || (typeof v === 'string' && v.trim() && Number.isFinite(Number(v)))) ? `${Number(v).toLocaleString('ko-KR')}${unit==='일차' ? '' : ' '}${unit}` : '확인 필요';
  const impact=data.impact || {};
  const noImpact=isNoImpact(data), evidence=outageEvidence(data), orders=orderEvidence(data), loss=lossEvidence(data), flagged=verifyInventory(data.recommended_tank_table);
  const event=Array.isArray(data.scenario_summary) ? data.scenario_summary.find(row=>row?.id==='S1') : null;
