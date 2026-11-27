@@ -56,3 +56,20 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .priority-action .event-copy{font-size:16px;line-height:1.7;color:#172b3b;margin:12px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .impact-item strong{font-size:clamp(18px,1.6vw,23px)}
 @media(max-width:650px){.result-priorities{grid-template-columns:1fr;gap:12px}.priority-action .event-copy{font-size:15px}}
+
+.scenario-table:focus-visible{outline:3px solid #087464;outline-offset:3px}
+.scenario-table th,.scenario-table td{white-space:nowrap}
+.scenario-table th[scope=row]{background:transparent;color:#253c37;text-align:left;font-weight:600}
+.scenario-table th[scope=col]:not(:first-child){text-align:right}
+.orders-table th[scope=col]:nth-child(2),.orders-table th[scope=col]:nth-child(4),.orders-table td:nth-child(2),.orders-table td:nth-child(4){text-align:left}
+.table-note{margin:12px 0 0;color:#566965;font-size:13px}
+.tank-data{margin-top:20px}
+.tank-data h4{margin:0;font-size:14px;color:#253c37}
+.tank-data .scenario-table{margin-top:8px}
+.updates-list{margin-top:12px}
+.update-row{display:grid;grid-template-columns:minmax(112px,160px) minmax(0,1fr);gap:16px;padding:14px 0;border-bottom:1px solid #e7efed}
+.update-row:last-child{border-bottom:0;padding-bottom:0}
+.update-row strong{color:#087464;font-size:13px}
+.update-row p{margin:0;overflow-wrap:anywhere}
+.update-row .update-note{color:#566965;font-size:13px;margin-top:4px}
+@media(max-width:650px){.update-row{grid-template-columns:1fr;gap:4px}}
