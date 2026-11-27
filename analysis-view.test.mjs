@@ -35,3 +35,10 @@ test('loss conversion requires an unambiguous returned price',()=>{
  assert.equal(lossEvidence({impact:{unshipped_delta_kl:2},team_reports:[{role:'B팀',message:'단가 1원/kL 또는 2원/kL'}]}),null);
  assert.equal(lossEvidence({impact:{unshipped_delta_kl:2}}),null);
 });
+test('rounded daily values are not flagged, a real mismatch still is',()=>{
+ const ship=[],close=[];let stock=5000;
+ for(let i=0;i<14;i++){const out=333.333+i*0.004;stock-=out;ship.push(Math.round(out*100)/100);close.push(Math.round(stock*100)/100);}
+ assert.deepEqual(verifyInventory({tank_close_kl:{T1:close,T2:close.map(v=>v+1000)},tank_ship_kl:{T1:ship,T2:ship}}),[]);
+ const broken=[...close];broken[5]+=5;
+ assert.deepEqual(verifyInventory({tank_close_kl:{T1:broken},tank_ship_kl:{T1:ship}}),[6,7]);
+});
