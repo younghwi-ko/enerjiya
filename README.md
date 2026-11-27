@@ -39,6 +39,8 @@ npm run dev
 
 `분석 기록`에서 저장된 작업을 다시 확인할 수 있습니다. 웹에서 새로 시작한 작업은 자동으로 목록에 추가됩니다. 과거 작업은 Studio Monitoring의 Job ID를 `이전 Studio 작업 추가`에 입력해 가져옵니다. 웹이 과거 작업 ID를 저장하지 않았으므로 모든 과거 작업을 자동으로 복원하지는 못합니다. 작업이 완료되면 목록에서 열 때 Studio 결과를 가져와 저장합니다. 공개 페이지이므로 공유해도 되는 문서만 업로드하세요.
 
+기록 왼쪽의 체크박스로 여러 건을 골라 `선택 삭제`로 지울 수 있습니다. 공용 목록이라 방문자 누구나 삭제할 수 있고, 삭제한 기록은 되돌릴 수 없습니다. Studio 작업 자체는 삭제되지 않으므로, 작업 ID를 알면 `이전 Studio 작업 추가`로 다시 넣을 수 있습니다. 이미 만든 Supabase 프로젝트에는 `supabase/migrations/20261127010000_allow_history_delete.sql`도 적용하세요.
+
 새 Supabase 프로젝트에 연결할 때 `supabase/migrations/20261127000000_create_analysis_history.sql`을 적용하고 서버에 `SUPABASE_URL`과 `SUPABASE_SECRET_KEY`를 설정하세요. 테이블은 RLS를 사용하며 익명 데이터베이스 접근을 막고, 웹 서버가 기록 조회를 제공합니다.
 
 ## 팀원 협업

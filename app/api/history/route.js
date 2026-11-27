@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { historyRequest, createHistory } from '../../../lib/history.mjs';
+import { historyRequest, createHistory, deleteHistory, JOB_ID } from '../../../lib/history.mjs';
 export const dynamic = 'force-dynamic';
 export async function GET(request) {
   try {
@@ -24,4 +24,14 @@ export async function POST(request) {
     await createHistory(jobId,fileName || '이전 Studio 작업');
     return NextResponse.json({ok:true});
   } catch(error) { console.error('History import failed:',error.message);return NextResponse.json({error:'기존 작업을 추가하지 못했습니다.'},{status:502}); }
+}
+// Anyone can delete public history entries (team decision). Studio jobs are not deleted.
+export async function DELETE(request) {
+  let jobIds;
+  try { ({jobIds} = await request.json()); } catch { return NextResponse.json({error:'삭제할 기록을 선택해 주세요.'},{status:400}); }
+  if (!Array.isArray(jobIds) || !jobIds.length) return NextResponse.json({error:'삭제할 기록을 선택해 주세요.'},{status:400});
+  if (jobIds.length > 100) return NextResponse.json({error:'한 번에 100건까지 삭제할 수 있습니다.'},{status:400});
+  if (jobIds.some(id => typeof id !== 'string' || !JOB_ID.test(id))) return NextResponse.json({error:'올바르지 않은 작업 ID입니다.'},{status:400});
+  try { return NextResponse.json({deleted:await deleteHistory(jobIds)}); }
+  catch (error) { console.error('History delete failed:',error.message); return NextResponse.json({error:'기록을 삭제하지 못했습니다.'},{status:503}); }
 }
