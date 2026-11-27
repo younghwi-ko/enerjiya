@@ -6,14 +6,20 @@ import { createHistory, updateHistory, historyRequest } from '../../../lib/histo
 export const maxDuration = 60;
 const base = () => (process.env.UPSTAGE_API_BASE_URL || 'https://api.upstage.ai/v2').replace(/\/$/, '');
 const headers = () => ({ Authorization: `Bearer ${process.env.UPSTAGE_API_KEY}`, ...(process.env.UPSTAGE_PROJECT_ID ? { 'x-project-id': process.env.UPSTAGE_PROJECT_ID } : {}) });
-async function upstream(path, options = {}) {
-  const response = await fetch(`${base()}${path}`, { ...options, headers:{...headers(), ...options.headers}, signal:AbortSignal.timeout(45000), cache:'no-store' });
-  if (!response.ok) throw new Error(`Studio API 오류 (${response.status})`);
+// Leave a few seconds of the 60s function limit for the response itself.
+const BUDGET_MS = 55000;
+async function upstream(path, options = {}, deadline = Date.now() + 45000) {
+  const timeout = Math.min(45000, deadline - Date.now());
+  if (timeout < 1000) { const error = new Error('Studio 응답 시간이 초과되었습니다.'); error.name = 'TimeoutError'; throw error; }
+  const response = await fetch(`${base()}${path}`, { ...options, headers:{...headers(), ...options.headers}, signal:AbortSignal.timeout(timeout), cache:'no-store' });
+  if (!response.ok) { const error = new Error(`Studio API 오류 (${response.status})`); error.status = response.status; throw error; }
   return response.json();
 }
-function failure(error) { console.error('Studio request failed:', error.message); return NextResponse.json({error: error.name === 'TimeoutError' ? 'Studio 응답 시간이 초과되었습니다.' : error.message}, {status:502}); }
+// Studio 4xx (except 429) will not succeed on retry, so pass it on as 4xx and the browser stops polling.
+function failure(error) { console.error('Studio request failed:', error.message); const status = error.status >= 400 && error.status < 500 && error.status !== 429 ? error.status : 502; return NextResponse.json({error: error.name === 'TimeoutError' ? 'Studio 응답 시간이 초과되었습니다.' : error.message}, {status}); }
 export async function POST(request) {
   if (!process.env.UPSTAGE_API_KEY || !process.env.UPSTAGE_WORKFLOW_ID) return NextResponse.json({error:'Studio 환경 변수가 설정되지 않았습니다.'},{status:503});
+  const deadline = Date.now() + BUDGET_MS;
   try {
     let file; let fileName;
     if (request.headers.get('content-type')?.includes('application/json')) {
@@ -43,10 +49,10 @@ export async function POST(request) {
     const bytes = new Uint8Array(await file.slice(0, 5).arrayBuffer());
     if (new TextDecoder().decode(bytes) !== '%PDF-') return NextResponse.json({error:'올바른 PDF 파일이 아닙니다.'},{status:400});
     const form = new FormData(); form.append('file',file); form.append('purpose','user_data');
-    const uploaded = await upstream('/files',{method:'POST',body:form});
+    const uploaded = await upstream('/files',{method:'POST',body:form},deadline);
     const payload = {model:process.env.UPSTAGE_WORKFLOW_ID,input:[{role:'user',content:[{type:'input_file',file_id:uploaded.id}]}],background:true,include:['last']};
     if (process.env.UPSTAGE_CONFIG_ID) payload.config_id = process.env.UPSTAGE_CONFIG_ID;
-    const job = await upstream('/responses',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const job = await upstream('/responses',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)},deadline);
     if (!job.id) throw new Error('Studio 작업 ID를 받지 못했습니다.');
     let historySaved=true;
     try { await createHistory(job.id,fileName); } catch (error) { historySaved=false; console.error('History write failed:',error.message); }
@@ -70,7 +76,12 @@ export async function GET(request) {
       return NextResponse.json({error: job.status === 'cancelled' ? 'Studio 작업이 취소됐습니다.' : `Studio 작업이 실패했습니다.${detail ? ` ${detail}` : ''}`}, {status:422});
     }
     if (job.status !== 'completed') return NextResponse.json({status:job.status});
-    const raw = extractResult(job);
+    let raw;
+    try { raw = extractResult(job); } catch(error) {
+      // A completed job with no output will not change; record it and stop polling.
+      try { await updateHistory(id,{status:'failed',error:error.message}); } catch(historyError) { console.error('History update failed:',historyError.message); }
+      return NextResponse.json({error:error.message},{status:422});
+    }
     const source=getOutputText(job); let historySaved=true;
     try { historySaved=await updateHistory(id,{status:'completed',result:raw,source}); } catch(error) { historySaved=false; console.error('History update failed:',error.message); }
     return NextResponse.json({status:'completed',result:normalize(raw),raw,source,historySaved});
