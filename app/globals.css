@@ -150,3 +150,5 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
  .print-report .report-note { padding-left: 10px; border-left: 2px solid #d7e2df; }
  .print-report .report-footer { display: block; margin-top: 22px; padding-top: 8px; border-top: 1px solid #bfceca; color: #5b6d70; font-size: 8pt; letter-spacing: 0; }
 }
+
+@media(min-width:651px){.content:has(.result-nav){padding-right:max(5%,104px)}}
