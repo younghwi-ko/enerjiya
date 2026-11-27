@@ -108,11 +108,3 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .interpretation-head span{background:#e3f0eb;color:#245448;padding:6px 10px;font-size:12px;border-radius:4px}
 .figure-link{border:0;background:transparent;color:#087464;font-weight:700;padding:2px;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:650px){.result-nav{right:8px;top:auto;bottom:12px;flex-direction:row}.result-nav a{padding:8px 12px}.result-nav a+a{border-top:0;border-left:1px solid var(--line)}.result-figure{padding:16px}.result-figure figcaption{flex-direction:column;gap:4px}}
-.role{display:inline-block;font-style:normal;font-size:11px;font-weight:700;border-radius:3px;padding:2px 6px;margin-right:6px;background:#eef3f1;color:#4f6662}
-.role.사용불가{background:#fbe3dc;color:#9c3b25}.role.출하{background:#dff1ea;color:#0b6655}.role.대기{background:#eef1f3;color:#5c6c76}
-.role-legend{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
-.role-amount{display:block;margin-top:4px;font-size:12px;color:#40524f}
-.flow-reason{font-weight:600}
-.flow-notes{margin:12px 0 0;padding-left:20px}.flow-notes li{line-height:1.8}
-.team-line{padding:8px 0;border-bottom:1px solid #edf2f0}.team-line strong{color:#087a68;margin-right:8px}
-@media(min-width:651px){.content:has(.result-nav){padding-right:max(5%,104px)}}
