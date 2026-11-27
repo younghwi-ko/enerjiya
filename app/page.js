@@ -49,6 +49,7 @@ export default function Home() {
  const restored=useRef(false);
  const runId=useRef(0); const input=useRef(null);
  useEffect(()=>{if(!tracking)return; const t=setInterval(()=>setElapsed(v=>v+1),1000);return()=>clearInterval(t)},[tracking]);
+ useEffect(()=>{if(state==='result')window.scrollTo({top:0,behavior:'auto'});},[state]);
  function reset(){runId.current++;sessionStorage.removeItem('enerjiya-job');setJob(null);setFileName('');setTracking(false);setHistoryNotice('');setFile(null);setState('ready');setError('');setResult(null);setRaw(null);setSource('');setElapsed(0);if(input.current)input.current.value='';}
  async function pollJob(activeJob,id){
   setJob(activeJob);setFileName(activeJob.fileName);setTracking(true);setState('loading');setStep(1);setError('');
