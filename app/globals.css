@@ -83,3 +83,13 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .update-row p{margin:0;overflow-wrap:anywhere}
 .update-row .update-note{color:#566965;font-size:13px;margin-top:4px}
 @media(max-width:650px){.update-row{grid-template-columns:1fr;gap:4px}}
+.impact-reason small,.inventory-warning small{display:inline-block;color:#566965;font-size:11px;margin-left:4px}
+.route-item{padding:14px 0;border-bottom:1px solid #e7efed}
+.route-item:last-child{border-bottom:0}
+.route-item p{margin:6px 0 0;overflow-wrap:anywhere}
+.inventory-warning{padding:10px 12px;background:#fff6df;color:#67470f;border-left:3px solid #a66d12;font-size:13px}
+.scenario-table th.flagged-day,.scenario-table td.flagged-day{background:#fff6df}
+.check-item{border-top:1px solid #e7efed;padding:12px 0}
+.check-item p{margin:0;overflow-wrap:anywhere}
+.check-item details{margin-top:6px;color:#566965;font-size:13px}
+.check-item summary{cursor:pointer}
