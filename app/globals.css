@@ -93,3 +93,18 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .check-item p{margin:0;overflow-wrap:anywhere}
 .check-item details{margin-top:6px;color:#566965;font-size:13px}
 .check-item summary{cursor:pointer}
+.result-nav{position:fixed;right:16px;top:42%;z-index:5;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 2px 8px #10233218}
+.result-nav a{padding:10px 14px;color:#235046;text-decoration:none;font-weight:700}
+.result-nav a+a{border-top:1px solid var(--line)}
+.result-figure{margin:16px 0;padding:22px;scroll-margin-top:24px}
+.result-figure figcaption{display:flex;justify-content:space-between;gap:16px;font-size:16px}
+.result-figure figcaption span{font-size:12px;color:#566965}
+.figure-bar{display:block;height:3px;background:#438b78;margin-top:6px;border-radius:2px}
+.scenario-table th.figure-highlight,.scenario-table td.figure-highlight{background:#b8e4d2;color:#163c31}
+.result-section{margin:16px 0}
+.interpretation{margin-top:52px;padding-top:28px;border-top:2px solid #a5bcb5;scroll-margin-top:20px}
+.interpretation-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.interpretation-head h2{margin:0;font-size:22px}
+.interpretation-head span{background:#e3f0eb;color:#245448;padding:6px 10px;font-size:12px;border-radius:4px}
+.figure-link{border:0;background:transparent;color:#087464;font-weight:700;padding:2px;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:650px){.result-nav{right:8px;top:auto;bottom:12px;flex-direction:row}.result-nav a{padding:8px 12px}.result-nav a+a{border-top:0;border-left:1px solid var(--line)}.result-figure{padding:16px}.result-figure figcaption{flex-direction:column;gap:4px}}
