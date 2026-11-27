@@ -56,6 +56,15 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .priority-tanks .tank-chips span{font-size:16px;font-weight:700;padding:8px 12px}
 .priority-action .event-copy{font-size:16px;line-height:1.7;color:#172b3b;margin:12px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .impact-item strong{font-size:clamp(18px,1.6vw,23px)}
+.impact-comparison{display:grid;gap:4px;padding-top:12px;border-top:1px solid #e4ece9;font-variant-numeric:tabular-nums}
+.impact-comparison div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 8px}
+.impact-comparison div span,.impact-comparison b{font-size:12px;line-height:1.45}
+.impact-comparison div span{color:#566965;font-weight:400}
+.impact-comparison b{color:#253c37;font-weight:600;overflow-wrap:anywhere}
+.impact-reason{background:#fff;border:1px solid var(--line);border-left:3px solid #087464;border-radius:4px;padding:18px 20px;margin-top:12px}
+.impact-reason h4{margin:0;font-size:15px}
+.impact-reason p{margin:8px 0 0;line-height:1.7;overflow-wrap:anywhere}
+.impact-reason .impact-reason-label{margin-top:3px;color:#566965;font-size:12px}
 @media(max-width:650px){.result-priorities{grid-template-columns:1fr;gap:12px}.priority-action .event-copy{font-size:15px}}
 
 .scenario-table:focus-visible{outline:3px solid #087464;outline-offset:3px}
