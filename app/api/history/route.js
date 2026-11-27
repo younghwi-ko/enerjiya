@@ -10,6 +10,7 @@ export async function GET(request) {
   } catch (error) { console.error('History read failed:',error.message); return NextResponse.json({error:'분석 기록을 불러오지 못했습니다.'},{status:503}); }
 }
 export async function POST(request) {
+  if (!process.env.UPSTAGE_API_KEY || !process.env.UPSTAGE_WORKFLOW_ID) return NextResponse.json({error:'Studio 환경 변수가 설정되지 않았습니다.'},{status:503});
   try {
     const {jobId,fileName} = await request.json();
     if (typeof jobId !== 'string' || !/^job_[a-zA-Z0-9_-]{1,196}$/.test(jobId)) return NextResponse.json({error:'올바른 Studio 작업 ID를 입력해 주세요.'},{status:400});
