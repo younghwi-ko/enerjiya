@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { upload } from '@vercel/blob/client';
-import { reviewNotice } from '../lib/results.mjs';
 const steps = ['문서 업로드 및 작업 시작','Studio 워크플로우 처리','결과 확인'];
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 function List({items}) { return items?.length ? <ul>{items.map((item,i)=><li key={i}>{item && typeof item==='object' ? [item.location,item.content,item.impact].filter(Boolean).join(' · ') || JSON.stringify(item) : String(item ?? '')}</li>)}</ul> : <p className="muted">확인 필요</p>; }
@@ -14,9 +13,8 @@ function TankTable({title, values, fmt}) {
 function EventResult({data}) {
  const fmt = (v,unit='') => (typeof v === 'number' || (typeof v === 'string' && v.trim() && Number.isFinite(Number(v)))) ? `${Number(v).toLocaleString('ko-KR')} ${unit}` : '확인 필요';
  const impact=data.impact || {};
- const notice=reviewNotice(data.check_needed);
  const cards=[['미출하 증감',fmt(impact.unshipped_delta_kl,'kL')],['손실 증감',fmt(impact.loss_delta_krw,'원')],['영향 주문 증감',fmt(impact.affected_order_delta,'건')],['넘침 위험일 증감',fmt(impact.overflow_risk_day_delta,'일')],['경고 증감',fmt(impact.warning_delta,'건')]];
- return <>{notice && <section className="review-notice" aria-labelledby="review-notice-title"><div><h3 id="review-notice-title">Studio 확인 요청 · {notice.count}건</h3><p>{notice.message}</p><a href="#review-details">전체 확인 사항 보기 ↓</a></div></section>}<div className="risk-banner neutral"><div><span className="overline">사건 분석 결과</span><h2>{data.event_type || '확인 필요'}</h2><p>사건 없는 기준안 대비 영향</p></div><div className="risk-value"><span>사건 상태</span><strong>{data.event_status || '확인 필요'}</strong><small>실행 상태 · {data.execution_status || '확인 필요'}</small></div></div>
+ return <><div className="risk-banner neutral"><div><span className="overline">사건 분석 결과</span><h2>{data.event_type || '확인 필요'}</h2><p>사건 없는 기준안 대비 영향</p></div><div className="risk-value"><span>사건 상태</span><strong>{data.event_status || '확인 필요'}</strong><small>실행 상태 · {data.execution_status || '확인 필요'}</small></div></div>
  <div className="result-priorities"><section className="card result-card priority-tanks"><div className="card-title"><h3>영향 탱크</h3></div><div className="tank-chips">{Array.isArray(data.targets) && data.targets.length ? data.targets.map(t=><span key={t}>{t}</span>) : <span>확인 필요</span>}</div></section>
  <section className="card result-card priority-action"><div className="card-title"><h3>대응 방향</h3></div><p className="event-copy">{data.recommendation || '확인 필요'}</p></section></div>
  <section className="impact-section" aria-labelledby="impact-heading"><div className="impact-heading"><h3 id="impact-heading">주요 영향 지표</h3><p>사건 없는 기준안 대비 증감</p></div><div className="impact-grid">{cards.map(([label,value])=><div className="impact-item" key={label}><span>{label}</span><strong>{value}</strong></div>)}</div></section>
