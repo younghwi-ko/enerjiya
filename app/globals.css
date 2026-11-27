@@ -166,3 +166,13 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line
 .history-list li.selected{background:#fdf3ef}
 .history-delete{color:#a94230;border-color:#e9c9bf}.history-delete:hover:not(:disabled){background:#fdf3ef}
 .history-notice{color:#087464;line-height:1.6}
+
+@media print {
+  body:has(.print-report) .sidebar,
+  body:has(.print-report) .topbar,
+  body:has(.print-report) .content > :not(.print-report) { display: none !important; }
+  body:has(.print-report) .app,
+  body:has(.print-report) main,
+  body:has(.print-report) .content { display: block; position: static; width: auto; min-width: 0; min-height: 0; max-width: none; margin: 0; padding: 0; }
+  body:has(.print-report) .print-report { position: static; width: 100%; }
+}
